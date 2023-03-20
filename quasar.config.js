@@ -68,7 +68,7 @@ module.exports = configure(function (/* ctx */) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      publicPath: '/transportation-app',
+      publicPath: '/bus-app',
       // analyze: true,
       env: {
         API: {
