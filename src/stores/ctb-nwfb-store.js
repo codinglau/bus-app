@@ -31,7 +31,7 @@ export const useCtbNwfbStore = defineStore('ctb-nwfb', {
     },
 
     // get bus routes from API
-    async getBusRouteList(companyId) {
+    async getRouteList(companyId) {
       try {
         const response = await api.get(`route/${companyId}`);
         return handleResponse(response);

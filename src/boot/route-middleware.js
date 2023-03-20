@@ -1,7 +1,28 @@
 import { boot } from 'quasar/wrappers';
+import { Notify } from 'quasar';
+import { i18n } from './i18n.js';
 import { useOption } from 'src/constants';
+
+const { companies } = useOption();
+const companyIds = companies.map((company) => company.value);
 
 // "async" is optional;
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
-export default boot(({ app, router }) => {
-})
+export default boot(({ router }) => {
+  router.beforeEach((to, from) => {
+    // validate company id in route
+    if ('companyId' in to.params) {
+      if (!companyIds.includes(to.params.companyId)) {
+        Notify.create({
+          type: 'negative',
+          message: i18n.global.t('message.invalidCompanyId'),
+        });
+        // for invalid company id, redirect to home page
+        return { name: 'home' };
+      }
+    } else {
+      // for invalid company id, redirect to home page
+      
+    }
+  });
+});

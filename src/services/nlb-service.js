@@ -7,11 +7,11 @@ export default function useNlbService() {
   /**
    * Get bus routes for a NLB
    */
-  async function getBusRouteList() {
+  async function getRouteList() {
     try {
       let busRouteList = [];
 
-      const response = await nlbStore.getBusRouteList();
+      const response = await nlbStore.getRouteList();
 
       if (response) {
         // map response to bus routes
@@ -62,7 +62,7 @@ export default function useNlbService() {
   }
 
   return {
-    getBusRouteList,
+    getRouteList,
     getBusRouteStopList,
   };
 }

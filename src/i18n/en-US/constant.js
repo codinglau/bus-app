@@ -1,5 +1,5 @@
 export default {
-  busCompany: {
+  company: {
     ctb: 'CTB',
     kmb_lwb: 'KMB & LWB',
     mtr: 'MTR-Bus',

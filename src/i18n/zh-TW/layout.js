@@ -1,6 +1,6 @@
 export default {
   header: {
-    title: '交通資訊 APP',
+    title: '巴士 APP',
   },
   drawer: {
     title: '巴士路線',

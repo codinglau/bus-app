@@ -1,5 +1,5 @@
 export default {
-  busCompany: {
+  company: {
     ctb: '城巴',
     kmb_lwb: '九巴 & 龍運',
     mtr: '鐵巴',

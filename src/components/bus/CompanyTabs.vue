@@ -10,21 +10,14 @@
         v-for="tab in options"
         :key="tab.value"
         v-bind="tab"
-        :label="t(tab.label)" />
+        :label="$t(tab.label)"
+        @click="() => onRouteUpdate(tab.value)" />
     <!-- Append slot -->
     <slot name="append"></slot>
   </q-tabs>
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
-
-// use i18n
-const { t } = useI18n();
-// use route
-const route = useRoute();
-
 // define props
 defineProps({
   options: {
@@ -32,4 +25,12 @@ defineProps({
     required: true,
   },
 });
+
+// define emits
+const emit = defineEmits(['tab-click']);
+
+// emit route update event
+function onRouteUpdate(routeId) {
+  emit('tab-click', routeId);
+}
 </script>

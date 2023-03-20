@@ -6,27 +6,28 @@
     <!-- drawer header -->
     <q-toolbar class="bg-primary text-white">
       <q-avatar icon="fa-solid fa-bus" />
-      <q-toolbar-title>{{ t(title) }}</q-toolbar-title>
+      <q-toolbar-title>{{ $t('layout.drawer.title') }}</q-toolbar-title>
 
       <q-btn flat round dense
           icon="fa-solid fa-gear"
-          :aria-label="t(dialogBtnLabel)"
-          @click="$emit('on-dialog-open')">
-        <q-tooltip>{{ t(dialogBtnLabel) }}</q-tooltip>
+          :aria-label="$t('layout.tooltip.about')"
+          @click="$emit('open-dialog')">
+        <q-tooltip>{{ $t('layout.tooltip.about') }}</q-tooltip>
       </q-btn>
     </q-toolbar>
 
     <!-- company tabs -->
     <Bus.CompanyTabs outside-arrows 
         class="bg-grey-2"
-        :options="companyList" />
+        :options="companyList"
+        @tab-click="(val) => $emit('tab-click', val)" />
 
     <!-- drawer search -->
     <q-input dense clearable
-        v-model.trim="searchField.value"
+        v-model.trim="searchField"
         clear-icon="close"
         debounce="300"
-        :placeholder="t(searchField.placeholder)">
+        :placeholder="$t('layout.drawer.search')">
       <template #prepend>
         <q-icon name="search" />
       </template>
@@ -36,26 +37,22 @@
     <q-scroll-area class="drawer__content">
       <Bus.RouteListSkeleton v-if="loading" />
       <Bus.RouteList 
-          v-else-if="isEmptyRouteList" 
+          v-else-if="!isEmptyRouteList" 
           :options="filteredRouteList" />
       <div v-else class="flex flex-center">
         <q-chip square 
             color="transparent"
             icon="warning"
             text-color="primary"
-            :label="t(emptyRouteListLabel)" />
+            :label="$t('layout.drawer.noData')" />
       </div>
     </q-scroll-area>
   </q-drawer>
 </template>
 
 <script setup>
-import { reactive, computed, markRaw } from 'vue';
+import { ref, computed, inject } from 'vue';
 import { Bus } from 'components';
-import { useI18n } from 'vue-i18n';
-
-// use i18n
-const { t } = useI18n();
 
 // define props
 const props = defineProps({
@@ -68,58 +65,53 @@ const props = defineProps({
     default: () => [],
     required: true,
   },
-  routeList: {
-    type: Array,
-    default: () => [],
-    required: true,
-  },
-  loading : {
-    type: Boolean,
-    default: false,
-    required: true,
-  },
 });
 
 // define emits
-defineEmits(['update:modelValue', 'on-dialog-open']);
+defineEmits(['update:modelValue', 'open-dialog', 'tab-click']);
 
-// drawer title
-const title = 'layout.drawer.title';
-
-// #region Dialog
-const dialogBtnLabel = 'layout.tooltip.about';
-// #endregion
+// inject route list and loading route list flag
+const routeList = inject('routeList');
+const loading = inject('loadingRouteList');
 
 // #region Search Field
-const searchField = reactive({
-  value: '',
-  placeholder: 'layout.drawer.search',
-});
+const searchField = ref('');
 // #endregion 
 
 // #region Bus Route List
 // filter route list by search field
 const filteredRouteList = computed(() => {
-  let routeList = [];
+  let resultList = [];
 
-  if (!searchField.value) {
-    // if search field is empty
-    routeList = props.routeList.slice();
-  } else {
+  if (searchField.value) {
     // if search field is not empty
-    routeList = props.routeList.filter((r) => {
-      const target = [r.id, r.origin, r.destination].join(' ').toUpperCase();
+    resultList = routeList.value.filter((r) => {
+      const origins = Object.keys(r.origin).map((k) => r.origin[k]);
+      const destinations = Object.keys(r.destination).map((k) => r.destination[k]);
+      const target = [r.id, ...origins, ...destinations].join(' ').toUpperCase();
       return target.includes(searchField.value.toUpperCase());
     });
+  } else {
+    // if search field is empty
+    resultList = routeList.value.slice();
   }
 
-  return routeList;
+  return resultList;
 });
 
 // empty route list flag
-const isEmptyRouteList = computed(() => filteredRouteList.value.length > 0);
-
-// empty route list label
-const emptyRouteListLabel = 'layout.drawer.noData';
+const isEmptyRouteList = computed(() => filteredRouteList.value.length === 0);
 // #endregion
 </script>
+
+<style lang="scss">
+.drawer {
+  display: flex;
+  flex-direction: column;  
+  
+  .drawer__content {
+    flex: 1 1 auto; // fill remaining space
+  }
+}
+</style>
+

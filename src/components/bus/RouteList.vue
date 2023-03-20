@@ -22,13 +22,13 @@
         </q-item-section>
         <q-item-section>
           <q-item-label>
-            {{ route.origin }}
+            {{ route.origin[$route.params.lang] }}
           </q-item-label>
           <q-item-label class="text-center">
             <q-icon name="swap_horiz" color="primary" size="sm" />
           </q-item-label>
           <q-item-label class="text-right">
-            {{ route.destination }}
+            {{ route.destination[$route.params.lang] }}
           </q-item-label>
         </q-item-section>
       </q-item>
@@ -55,7 +55,6 @@ function viewBusRoute(routeId) {
   return {
     name: 'bus.routeStopList',
     params: { routeId: routeId },
-    query: { direction: 'outbound' }
   };
 };
 </script>

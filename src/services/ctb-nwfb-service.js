@@ -25,10 +25,10 @@ export default function useCtbNwfbService() {
    * @param {{ [x:string]: string }} request
    * @returns {Promise<Object[]>}
    */
-  async function getBusRouteList({ companyId }) {
+  async function getRouteList({ companyId }) {
     try {
       let busRouteList = [];
-      const response = await ctbNwfbStore.getBusRouteList(companyId);
+      const response = await ctbNwfbStore.getRouteList(companyId);
 
       if (response) {
         // map response to bus routes
@@ -147,7 +147,7 @@ export default function useCtbNwfbService() {
 
   return {
     getBusRoute,
-    getBusRouteList,
+    getRouteList,
     getBusRouteStopList,
     getBusStopEtaList,
   };

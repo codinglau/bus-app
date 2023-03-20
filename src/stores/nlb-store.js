@@ -31,7 +31,7 @@ export const useNlbStore = defineStore('nlb', {
     },
 
     // get bus routes from API
-    async getBusRouteList() {
+    async getRouteList() {
       try {
         const response = await api.get('route.php?action=list');
         return handleResponse(response);

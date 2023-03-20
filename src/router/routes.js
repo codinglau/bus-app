@@ -2,31 +2,28 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    props: (route) => ({
-        ...route.params,
-        ...route.props,
-    }),
     children: [
       {
         path: '',
-        redirect: (to) => ({
-          name: 'home',
-          params: {
-            lang: to.params.lang || 'tc', // default to traditional chinese
-          },
-        }),
+        name: 'home',
+        redirect: {
+          name: 'bus.routeList',
+          params: { 
+            lang: 'tc',   // default language is Traditional Chinese
+            companyId: 'kmb', // default bus company is KMB 
+          }, 
+        },
       },
       {
         path: ':lang',
         children: [
           {
             path: '',
-            name: 'home',
             redirect: (to) => ({
               name: 'bus.routeList',
               params: {
                 lang: to.params.lang,
-                companyId: to.params.companyId || 'kmb', // default to KMB
+                companyId: 'kmb', // default bus company is KMB
               },
             }),
           },
@@ -41,7 +38,7 @@ const routes = [
               {
                 path: ':routeId',
                 name: 'bus.routeStopList',
-                component: () => import('src/pages/bus/RouteStopListPage.vue'),
+                component: () => import('pages/bus/RouteStopListPage.vue'),
                 props: (route) => ({
                   ...route.params,
                   ...route.query,

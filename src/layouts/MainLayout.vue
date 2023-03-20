@@ -8,7 +8,7 @@
             aria-label="Menu"
             @click="toggleLeftDrawer" />
         <q-toolbar-title>
-          {{ t(title) }}
+          {{ $t('layout.header.title') }}
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -24,7 +24,7 @@
         <template #prepend>
           <q-btn unelevated stretch
               icon="fa-solid fa-gear" 
-              :aria-label="t(dialogBtnLabel)"
+              :aria-label="$t('layout.tooltip.about')"
               @click="isDialogOpen = true" />
         </template>
         <template #append>
@@ -40,10 +40,9 @@
     <Layout.DesktopDrawer 
         v-if="$q.screen.gt.sm"
         v-model="leftDrawerOpen"
-        :loading="loadingRouteList"
         :company-list="companyList"
-        :route-list="routeListByLang"
-        @on-dialog-open="isDialogOpen = true" />
+        @open-dialog="isDialogOpen = true"
+        @tab-click="onTabClick" />
 
     <!-- main panel -->
     <q-page-container>
@@ -57,7 +56,7 @@
 
 <script setup>
 import { useMeta, useQuasar } from 'quasar';
-import { ref, computed, onBeforeMount, watch, provide } from 'vue';
+import { ref, computed, watch, provide, onBeforeMount, onBeforeUpdate } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Bus, Dialog, Layout } from 'components';
@@ -76,68 +75,19 @@ const { t } = useI18n();
 const option = useOption();
 // use fetch 
 const { 
-  fetch, 
+  fetchApi, 
   loadingRouteList 
 } = useFetch(['loadingRouteList']);
 // use bus service
-const { getBusRouteList } = useBusService();
+const service = useBusService();
 // #endregion
-
-// define props
-const props = defineProps({
-  lang: {
-    type: String,
-    default: 'tc',  // default to traditional chinese
-    required: true,
-  },
-  companyId: {
-    type: String,
-    default: 'kmb', // default to kmb
-  },
-});
 
 // #region Drawer
 // left drawer open state
 const leftDrawerOpen = ref(false);
-
 // toggle left drawer
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
-}
-// #endregion
-
-// #region Bus Route List
-const routeList = ref([]);
-
-// computed bus routes by language
-const routeListByLang = computed(
-  () => routeList.value.map((r) => ({
-    ...r,
-    origin: r.origin[props.lang],
-    destination: r.destination[props.lang],
-  }))
-);
-// provide bus route list to child component
-provide('routeList', routeListByLang);
-provide('loadingRouteList', loadingRouteList);
-
-// fetch bus route list
-function fetchRouteList(companyId) {
-  fetch(getBusRouteList, { companyId }, {
-    config: {
-      loadingScope: 'loadingRouteList',
-    },
-    onSuccess(response) {
-      routeList.value = response.map((r) => {
-        let company = option.busCompanies.find((c) => c.value === companyId);
-        return {
-          ...r,
-          company: company.label,
-          color: company.color,
-        };
-      });
-    },
-  });
 }
 // #endregion
 
@@ -145,8 +95,10 @@ function fetchRouteList(companyId) {
 // when it is route stop list page, display the belonging company
 // and return to route list page button
 // otherwise, display all bus companies
+const companyId = ref('');
+const companyIds = option.companies.map((c) => c.value);
 const companyList = computed(() => {
-  let companyList = option.busCompanies.map((c) => ({
+  let companyList = option.companies.map((c) => ({
     ...c,
     to: {
       name: 'bus.routeList',
@@ -181,51 +133,81 @@ const returnBtn = computed(() => {
 });
 // #endregion
 
+// #region Bus Route List
+const routeList = ref([]);
+// provide bus route list to desktop drawer and route list page
+provide('routeList', routeList);
+provide('loadingRouteList', loadingRouteList);
+// fetch bus route list
+function fetchRouteList() {
+  // check if company id is valid
+  if (!companyIds.includes(route.params.companyId)) {
+    $q.notify({ type: 'negative', message: t('layout.error.invalidCompanyId') });
+    return;
+  }
+
+  fetchApi(service.getRouteList, { 
+    companyId: route.params.companyId 
+  }, {
+    config: {
+      loadingScope: 'loadingRouteList',
+    },
+    onSuccess(response) {
+      routeList.value = response.map((r) => ({
+        ...r,
+        company: option.companies.find((c) => c.value === companyId.value).label,        
+      }));
+    },
+  });
+}
+// #endregion
+
 // #region Dialog
 // dialog open state
 const isDialogOpen = ref(false);
-const dialogBtnLabel = 'layout.tooltip.about';
 // #endregion
 
+// hangle tab click
+function onTabClick(val) {
+  companyId.value = val;
+  if (val !== route.params.companyId) {
+    // setTimeout(fetchRouteList, 300);
+  }
+}
+
 // #region Meta
-const title = 'layout.header.title';
 useMeta(() => ({
-  title: t(title),
+  title: t('layout.header.title'),
 }));
 // #endregion
 
-// reset bus route list when company id changes
-watch(() => props.companyId, () => {
-  setTimeout(() => {
-    fetchRouteList(props.companyId);
-  }, 300);
-});
-
 // watch screen size changes
-watch(() => $q.screen.gt.sm, (newVal) => {
-  if (!newVal && route.name === 'bus.routeList') {
-    // if screen size is less than sm and current route is bus routes
-    // then reset bus route list
-    fetchRouteList(props.companyId);
-  } else if (newVal) {
-    // if screen size is greater than sm, reset bus route list
-    fetchRouteList(props.companyId);
+watch(
+  () => $q.screen.gt.sm, 
+  (newVal) => {
+    if (newVal) {
+      // if screen size is greater than sm, reset bus route list
+      fetchRouteList();
+    } else {
+      if (route.name === 'bus.routeList') {
+        // if screen size is less than sm and current route is bus routes
+        // then reset bus route list
+        fetchRouteList();
+      }
+    }
   }
+);
+
+// fetch bus route list before mounting
+onBeforeMount(() => {
+  companyId.value = route.params.companyId;
+  fetchRouteList();
 });
 
-// fetch bus route list on before mount
-onBeforeMount(() => {
-  fetchRouteList(props.companyId);
+onBeforeUpdate(() => {
+  if (route.name === 'bus.routeList') {
+    companyId.value = route.params.companyId;
+    setTimeout(fetchRouteList, 300);
+  }
 });
 </script>
-
-<style scoped lang="scss">
-:deep(.drawer) {
-  display: flex;
-  flex-direction: column;  
-  
-  .drawer__content {
-    flex: 1 1 auto; // fill remaining space
-  }
-}
-</style>

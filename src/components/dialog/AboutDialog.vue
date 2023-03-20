@@ -52,7 +52,7 @@
               </q-item-label>
               <q-item-label>
                 <template v-if="[ 'bugReport', 'createdBy' ].includes(item.name)">
-                  {{ t(item.label, { account: 'codinglau', domain: 'gmail.com' }) }}
+                  codinglau@gmail.com
                 </template>
                 <template v-else>
                   {{ t(item.label) }}

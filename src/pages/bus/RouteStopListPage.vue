@@ -1,8 +1,8 @@
 <template>
-  <q-page class="row items-stretch">
-    <q-skeleton v-if="loadingBusRoute" type="QToolbar" />
-    <div v-else class="header col-12">
-      <q-toolbar class="bg-primary text-white text-center">
+  <q-page>
+    <div class="header">
+      <q-skeleton v-if="loadingBusRoute" type="QToolbar" />
+      <q-toolbar v-else class="bg-primary text-white text-center">
         <q-toolbar-title>
           <q-chip :label="busRoute.routeId" color="white" />
           {{ busRoute.origin[lang] }}
@@ -25,11 +25,10 @@
     </div>
     
     <!-- skeleton -->
-    <Bus.RouteStopListSkeleton v-if="loadingBusRouteStopList" class="col-12" />
+    <Bus.RouteStopListSkeleton v-if="loadingBusRouteStopList" />
     <!-- bus route stop lists -->
     <q-tab-panels v-else swipeable keep-alive animated 
-        v-model="direction.value"
-        class="col-12">
+        v-model="direction.value">
       <q-tab-panel 
           v-for="d in direction.options"
           :key="d.value"
@@ -109,7 +108,7 @@ const router = useRouter();
 const { t } = useI18n();
 // use fetch
 const { 
-  fetch, 
+  fetchApi, 
   loadingBusRoute,
   loadingBusRouteStopList,
   loadingBusStopEtaList, 
@@ -159,7 +158,7 @@ const busRoute = reactive({
 
 // get bus route information
 async function fetchBusRoute() {
-  fetch(service.getBusRoute, {
+  fetchApi(service.getBusRoute, {
     companyId: props.companyId, 
     routeId: props.routeId
   }, {
@@ -233,7 +232,7 @@ function fetchBusRouteStopList(companyId, routeId) {
   // clear current stop
   currentStop.value = null;
 
-  fetch(service.getBusRouteStopList, { 
+  fetchApi(service.getBusRouteStopList, { 
     companyId, routeId
   }, {
     config: {
@@ -264,7 +263,7 @@ function fetchBusStopEtaList(stopId, direction) {
   // clear timer
   clearTimer();
 
-  fetch(service.getBusStopEtaList, { 
+  fetchApi(service.getBusStopEtaList, { 
     companyId: props.companyId, 
     routeId: props.routeId, 
     stopId, 
@@ -341,7 +340,8 @@ onBeforeUnmount(() => {
 .header {
   position: sticky;
   top: 50px;
-  z-index: 1;
+  min-height: 100px;
+  z-index: 2;
 
   @media screen and (max-width: $breakpoint-sm-max) {
     top: 0;

@@ -28,16 +28,16 @@ export default function useBusService() {
    * @param {{ [x:string]: string }} request
    * @returns {Promise<Array>}
    */
-  async function getBusRouteList({ companyId }) {
+  async function getRouteList({ companyId }) {
     try {
       let busRouteList = [];
 
       if (['ctb', 'nwfb'].includes(companyId)) {
-        busRouteList = await ctbNwfbService.getBusRouteList({ companyId });
+        busRouteList = await ctbNwfbService.getRouteList({ companyId });
       } else if (companyId === 'kmb') {
-        busRouteList = await kmbLwbService.getBusRouteList();
+        busRouteList = await kmbLwbService.getRouteList();
       } else if (companyId === 'nlb') {
-        busRouteList = await nlbService.getBusRouteList();
+        busRouteList = await nlbService.getRouteList();
       }
       return Promise.resolve(busRouteList);
     } catch (error) {
@@ -87,7 +87,7 @@ export default function useBusService() {
 
   return {
     getBusRoute,
-    getBusRouteList,
+    getRouteList,
     getBusRouteStopList,
     getBusStopEtaList,
   };

@@ -3,33 +3,34 @@ import { Loading, Notify } from 'quasar';
 import { reactive, toRefs } from 'vue';
 
 /**
- * @param {[string]} loadingComponents - array of loading components
+ * @param {[string]?} loadingComponents - array of loading components
  */
 export default function useFetch(loadingComponents) {
-  // check if loadingComponents is an array
-  if (!Array.isArray(loadingComponents)) {
-    throw new Error('loadingComponents must be an array.');
+  // init loadingContext
+  let loadingContext = {};
+
+  if (Array.isArray(loadingComponents)) {
+    // construct loading context
+    loadingContext = loadingComponents.reduce((cxt, component) => {
+      // check if component is a string and not empty
+      if (typeof component === 'string' && component.length > 0) {
+        cxt[component] = false;
+      }
+  
+      return cxt;
+    }, {});
   }
 
-  // construct loading context
-  const loadingContext = loadingComponents.reduce((cxt, component) => {
-    // check if component is a string and not empty
-    if (typeof component === 'string' && component.length > 0) {
-      cxt[component] = false;
-    }
-
-    return cxt;
-  }, {});
-
+  // init loading state
   const loading = reactive({
     ...loadingContext,
-    global: false,
+    loadingGlobal: false,
   });
 
   /**
    * @type {Object} defaultConfig - default loading configuration
-   * @property {Boolean} enableLoading - default true; toggle loading state
-   * @property {string} loadingScope - default 'global'; loading scope (global, component)
+   * @property {Boolean} enableLoading - default true; toggle on/off loading state
+   * @property {string} loadingScope - default 'global'; loading scope (global or loading component)
    */
   const defaultConfig = {
     enableLoading: true,  
@@ -45,8 +46,9 @@ export default function useFetch(loadingComponents) {
    *  onError?: Function,
    *  onFinally?: Function, 
    * }} context
+   * @returns {Promise<void>}
    */
-  async function fetch(action, request, context) {
+  async function fetchApi(action, request, context) {
     // destructure context
     const {
       config,
@@ -61,8 +63,8 @@ export default function useFetch(loadingComponents) {
       loadingScope 
     } = Object.assign({}, defaultConfig, config);
 
-    // check if loading scope is valid
-    if (!loadingScope || !loadingComponents.includes(loadingScope)) {
+    if (loadingScope !== 'loadingGlobal' && !loadingComponents.includes(loadingScope)) {
+      // check if loading scope is valid
       throw new Error('Invalid loading scope.');
     }
     
@@ -75,7 +77,7 @@ export default function useFetch(loadingComponents) {
         // render loading spinner if enabled
         if (enableLoading) {
           loading[loadingScope] = true;
-          if (loadingScope === 'global') Loading.show();
+          if (loadingScope === 'loadingGlobal') Loading.show();
         }
         
         // when action is a function
@@ -90,9 +92,8 @@ export default function useFetch(loadingComponents) {
           }
         }
       }
-
-    // catch and handle error
     } catch (error) {
+      // catch and handle error
       let message = '';
       
       if (typeof onError === 'function') {
@@ -107,16 +108,18 @@ export default function useFetch(loadingComponents) {
     } finally {
       if (enableLoading) {
         loading[loadingScope] = false;
-        if (loadingScope === 'global') Loading.hide();
+        if (loadingScope === 'loadingGlobal') Loading.hide();
       }
       if (typeof onFinally === 'function') {
         onFinally();
       }
+
+      return Promise.resolve();
     }
   }
 
   return { 
-    fetch, 
+    fetchApi, 
     ...toRefs(loading), 
   };
 }

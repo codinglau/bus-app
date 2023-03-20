@@ -7,11 +7,11 @@ export default function useKmbLwbService() {
   /**
    * Get bus routes for a KMB/LWB
    */
-  async function getBusRouteList() {
+  async function getRouteList() {
     try {
       let busRouteList = [];
 
-      const response = await kmbLwbStore.getBusRouteList();
+      const response = await kmbLwbStore.getRouteList();
 
       if (response) {
         // map response to bus routes
@@ -61,7 +61,7 @@ export default function useKmbLwbService() {
   }
 
   return {
-    getBusRouteList,
+    getRouteList,
     getBusRouteStopList,
   };
 }
