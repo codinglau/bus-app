@@ -1,10 +1,12 @@
 // @ts-check
+import { useOption } from 'src/constants';
 import useCtbNwfbService from './ctb-nwfb-service.js';
 import useKmbLwbService from './kmb-lwb-service.js';
 import useNlbService from './nlb-service.js';
-import { useNlbStore } from 'src/stores/nlb-store';
 
 export default function useBusService() {
+  const option = useOption();
+
   const ctbNwfbService = useCtbNwfbService();
   const kmbLwbService = useKmbLwbService();
   const nlbService = useNlbService();
@@ -30,16 +32,25 @@ export default function useBusService() {
    */
   async function getRouteList({ companyId }) {
     try {
-      let busRouteList = [];
+      let routeList = [];
 
       if (['ctb', 'nwfb'].includes(companyId)) {
-        busRouteList = await ctbNwfbService.getRouteList({ companyId });
+        routeList = await ctbNwfbService.getRouteList({ companyId });
       } else if (companyId === 'kmb') {
-        busRouteList = await kmbLwbService.getRouteList();
+        routeList = await kmbLwbService.getRouteList();
       } else if (companyId === 'nlb') {
-        busRouteList = await nlbService.getRouteList();
+        routeList = await nlbService.getRouteList();
       }
-      return Promise.resolve(busRouteList);
+
+      // add company label to each route
+      routeList = routeList.map((
+        /** @type {{ [x:string]: string }} */ rl
+      ) => ({
+        ...rl,
+        company: option.companies.find((c) => c.value === companyId).label,
+      }));
+
+      return Promise.resolve(routeList);
     } catch (error) {
       return Promise.reject(error);
     }

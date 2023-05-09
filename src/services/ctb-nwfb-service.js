@@ -3,7 +3,7 @@ import { date } from 'quasar';
 import { useCtbNwfbStore } from 'stores/ctb-nwfb-store';
 
 export default function useCtbNwfbService() {
-  const ctbNwfbStore = useCtbNwfbStore();
+  const store = useCtbNwfbStore();
 
   /**
    * Get a bus route info, e.g. origin, destination, etc.
@@ -12,7 +12,7 @@ export default function useCtbNwfbService() {
    */
   async function getBusRoute({ companyId, routeId }) {
     try {
-      const response = await ctbNwfbStore.getBusRoute(companyId, routeId);
+      const response = await store.getBusRoute(companyId, routeId);
 
       return Promise.resolve(response);
     } catch (error) {
@@ -28,7 +28,7 @@ export default function useCtbNwfbService() {
   async function getRouteList({ companyId }) {
     try {
       let busRouteList = [];
-      const response = await ctbNwfbStore.getRouteList(companyId);
+      const response = await store.getRouteList(companyId);
 
       if (response) {
         // map response to bus routes
@@ -68,7 +68,7 @@ export default function useCtbNwfbService() {
 
       // get both inbound and outbound bus stop lists
       const busRouteStopListActions = Object.keys(busRouteStopList)
-        .map((d) => ctbNwfbStore.getBusRouteStopList(companyId, routeId, d));
+        .map((d) => store.getBusRouteStopList(companyId, routeId, d));
 
       const busRouteStopListResponses = await Promise.all(busRouteStopListActions);
       
@@ -80,7 +80,7 @@ export default function useCtbNwfbService() {
         .filter((s, i, o) => o.findIndex((t) => (t.stop === s.stop)) === i)
         .map((
           /** @type {{ stop: Object; }} */ s
-        ) => ctbNwfbStore.getBusStop(s.stop));
+        ) => store.getBusStop(s.stop));
         
       // get bus stop details
       const busStopResponses = await Promise.all(busStopActions);
@@ -119,7 +119,7 @@ export default function useCtbNwfbService() {
    */
   async function getBusStopEtaList({ companyId, stopId, routeId, direction }) {
     try {
-      const response = await ctbNwfbStore.getBusStopEtaList(companyId, stopId, routeId);
+      const response = await store.getBusStopEtaList(companyId, stopId, routeId);
 
       let busStopEtaList = [];
       if (response && Array.isArray(response)) {

@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="header">
+    <!-- <div class="header">
       <q-skeleton v-if="loadingBusRoute" type="QToolbar" />
       <q-toolbar v-else class="bg-primary text-white text-center">
         <q-toolbar-title>
@@ -22,10 +22,10 @@
               :label="t(d.label)" />
         </q-tabs>
       </q-toolbar>
-    </div>
+    </div> -->
     
     <!-- skeleton -->
-    <Bus.RouteStopListSkeleton v-if="loadingBusRouteStopList" />
+    <Bus.RouteStopListSkeleton v-if="loadingRouteStopList" />
     <!-- bus route stop lists -->
     <q-tab-panels v-else swipeable keep-alive animated 
         v-model="direction.value">
@@ -33,13 +33,14 @@
           v-for="d in direction.options"
           :key="d.value"
           :name="d.value"
-          :disable="d.disable">
-        <q-list>
-          <q-expansion-item popup
+          :disable="d.disable"
+          class="no-padding">
+        <q-list separator>
+          <q-expansion-item
               v-for="s in busRouteStopList[d.value]"
               :key="s.stop"
-              icon="keyboard_double_arrow_down"
               :label="s[lang]"
+              icon="keyboard_double_arrow_down"
               group="inbound"
               expand-icon="zoom_out_map"
               expanded-icon="zoom_in_map"
@@ -47,7 +48,7 @@
             <q-card>
               <q-card-section class="text-center">
                 <q-spinner-comment
-                    v-if="loadingBusStopEtaList"
+                    v-if="loadingStopEtaList"
                     color="secondary"
                     size="3em" />
                 <div 
@@ -73,7 +74,7 @@
     </q-tab-panels>
 
     <!-- floating btns -->
-    <template v-if="!loadingBusRouteStopList">
+    <template v-if="!loadingRouteStopList">
       <q-page-sticky
           v-if="currentStop" 
           position="bottom-right" 
@@ -82,7 +83,7 @@
             icon="refresh" 
             color="secondary" 
             :label="refreshBusStopEtaLabel"
-            :loading="loadingBusStopEtaList"
+            :loading="loadingStopEtaList"
             @click="fetchBusStopEtaList" />
       </q-page-sticky>
     </template>
@@ -110,12 +111,12 @@ const { t } = useI18n();
 const { 
   fetchApi, 
   loadingBusRoute,
-  loadingBusRouteStopList,
-  loadingBusStopEtaList, 
+  loadingRouteStopList,
+  loadingStopEtaList, 
 } = useFetch([
   'loadingBusRoute',
-  'loadingBusRouteStopList', 
-  'loadingBusStopEtaList',
+  'loadingRouteStopList', 
+  'loadingStopEtaList',
 ]);
 // use bus service
 const service = useBusService();
@@ -136,9 +137,8 @@ const props = defineProps({
   },
   direction: {
     type: String,
-    required: true,
     default: 'outbound',
-    validate: (value) => ['OUTBOUND', 'INBOUND'].includes(value.toUpperCase()),
+    validate: (val) => ['OUTBOUND', 'INBOUND'].includes(val.toUpperCase()),
   },
 });
 
@@ -162,9 +162,7 @@ async function fetchBusRoute() {
     companyId: props.companyId, 
     routeId: props.routeId
   }, {
-    config: {
-      loadingScope: 'loadingBusRoute',
-    },
+    config: { loadingScope: 'loadingBusRoute' },
     onSuccess(response) {
       busRoute.routeId = response.route;
       busRoute.origin.en = response.orig_en;
@@ -236,7 +234,7 @@ function fetchBusRouteStopList(companyId, routeId) {
     companyId, routeId
   }, {
     config: {
-      loadingScope: 'loadingBusRouteStopList',
+      loadingScope: 'loadingRouteStopList',
     },
     onSuccess(response) {
       for (const key in response) {
@@ -270,7 +268,7 @@ function fetchBusStopEtaList(stopId, direction) {
     direction,
   }, {
     config: {
-      loadingScope: 'loadingBusStopEtaList',
+      loadingScope: 'loadingStopEtaList',
     },
     onSuccess(response) {
       const stop = busRouteStopList[direction]
@@ -335,25 +333,3 @@ onBeforeUnmount(() => {
   clearTimer();
 });
 </script>
-
-<style scoped lang="scss">
-.header {
-  position: sticky;
-  top: 50px;
-  min-height: 100px;
-  z-index: 2;
-
-  @media screen and (max-width: $breakpoint-sm-max) {
-    top: 0;
-  }
-}
-
-// .route-list {
-//   max-height: calc(100vh - 150px);
-//   overflow: scroll;
-
-//   @media screen and (max-width: $breakpoint-sm-max) {
-//     max-height: calc(100vh - 100px);
-//   }
-// }
-</style>

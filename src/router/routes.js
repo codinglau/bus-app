@@ -36,7 +36,7 @@ const routes = [
                 component: () => import('pages/bus/RouteListPage.vue'),
               },
               {
-                path: ':routeId',
+                path: ':routeId/:direction',
                 name: 'bus.routeStopList',
                 component: () => import('pages/bus/RouteStopListPage.vue'),
                 props: (route) => ({

@@ -14,6 +14,9 @@ const path = require('path');
 
 module.exports = configure(function (/* ctx */) {
   return {
+    htmlVariables: {
+      version: require('./package.json').version,
+    },
     eslint: {
       // fix: true,
       // include = [],

@@ -2,7 +2,7 @@
 import { useNlbStore } from 'src/stores/nlb-store';
 
 export default function useNlbService() {
-  const nlbStore = useNlbStore();
+  const store = useNlbStore();
 
   /**
    * Get bus routes for a NLB
@@ -11,7 +11,7 @@ export default function useNlbService() {
     try {
       let busRouteList = [];
 
-      const response = await nlbStore.getRouteList();
+      const response = await store.getRouteList();
 
       if (response) {
         // map response to bus routes

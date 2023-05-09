@@ -14,7 +14,7 @@
         <q-item-label>
           <q-skeleton type="text" />
         </q-item-label>
-        <q-item-label caption>
+        <q-item-label>
           <q-skeleton type="text" />
         </q-item-label>
       </q-item-section>

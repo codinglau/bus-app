@@ -11,7 +11,7 @@ const api = axios.create();
 
 export default boot(({ app, router }) => {
   // set default API URL based on the route params
-  router.beforeEach((to, from) => {
+  router.beforeEach((to, _) => {
     const companyId = ('companyId' in to.params) 
       ? to.params.companyId.toUpperCase() 
       : null;

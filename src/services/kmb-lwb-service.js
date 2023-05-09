@@ -2,7 +2,7 @@
 import { useKmbLwbStore } from 'stores/kmb-lwb-store';
 
 export default function useKmbLwbService() {
-  const kmbLwbStore = useKmbLwbStore();
+  const store = useKmbLwbStore();
 
   /**
    * Get bus routes for a KMB/LWB
@@ -11,7 +11,7 @@ export default function useKmbLwbService() {
     try {
       let busRouteList = [];
 
-      const response = await kmbLwbStore.getRouteList();
+      const response = await store.getRouteList();
 
       if (response) {
         // map response to bus routes

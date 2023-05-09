@@ -29,6 +29,32 @@ export default function useOption() {
         color: 'light-green',
       },
     ],
+
+    // get company ids
+    getCompanyIds: function () {
+      return this.companies.map((
+        /** @type {{ value: any; }} */ c
+      ) => c.value);
+    },
+
+    // get company list
+    getCompanyList: function (routeData = false) {
+      let companyList = [];
+
+      if (routeData) {
+        companyList = this.companies.map((c) => ({
+          ...c,
+          to: {
+            name: 'bus.routeList',
+            params: { companyId: c.value },
+          }
+        }));
+      } else {
+        companyList = this.companies.slice();
+      }
+
+      return companyList;
+    },
   };
 
   return option;
