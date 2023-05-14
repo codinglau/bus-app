@@ -147,9 +147,9 @@ function toRouteStopList(routeId) {
 };
 
 // #region Lifecycle
-onBeforeMount(() => {
-  fetchRouteList();
-});
+// onBeforeMount(() => {
+//   fetchRouteList();
+// });
 // #endregion
 
 watchEffect(() => {

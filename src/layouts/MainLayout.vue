@@ -18,7 +18,7 @@
     </q-header>
 
     <!-- footer -->
-    <q-footer elevated class="bg-transparent text-dark">
+    <q-footer elevated v-if="showFooter" class="bg-transparent text-dark">
       <!-- company tabs -->
       <Bus.CompanyTabs outside-arrows switch-indicator
           class="bg-primary text-white"
@@ -65,9 +65,11 @@ function onToolbarTitleClick() {
 const isDialogOpen = ref(false);
 // #endregion
 
-// #region Company List
-const companyId = ref('');
+// #region Footer ==============================================================
 const companyList = globalOption.getCompanyList(true);
+const showFooter = computed(() => (
+  route.name === 'bus.routeList'
+));
 // #endregion
 
 // render route list page mobile header 
