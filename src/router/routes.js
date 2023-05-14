@@ -7,7 +7,7 @@ const routes = [
         path: '',
         name: 'home',
         redirect: {
-          name: 'bus.index',
+          name: 'bus.home',
           params: {
             lang: 'tc',   // default language is Traditional Chinese
           },
