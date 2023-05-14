@@ -16,7 +16,7 @@ export default {
     },
     version: {
       caption: 'Version',
-      label: '1.0.0'
+      label: '0.1.1'
     },
     dataSource: {
       caption: 'Source of the Data',

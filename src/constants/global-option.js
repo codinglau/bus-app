@@ -1,6 +1,6 @@
 // @ts-check
 // global options
-export default function useOption() {
+export default function useGlobalOption() {
   const option = {
     companies: [
       { 
@@ -33,7 +33,7 @@ export default function useOption() {
     // get company ids
     getCompanyIds: function () {
       return this.companies.map((
-        /** @type {{ value: any; }} */ c
+        /** @type {{ value: string; }} */ c
       ) => c.value);
     },
 

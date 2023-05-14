@@ -4,15 +4,18 @@
       active-bg-color="primary" 
       active-color="white" 
       indicator-color="primary">
-    <!-- Prepend slot -->
+    
+      <!-- Prepend slot -->
     <slot name="prepend"></slot>
+    
     <q-route-tab
         v-for="tab in options"
         :key="tab.value"
         v-bind="tab"
         :label="$t(tab.label)"
         @click="() => onRouteUpdate(tab.value)" />
-    <!-- Append slot -->
+    
+        <!-- Append slot -->
     <slot name="append"></slot>
   </q-tabs>
 </template>

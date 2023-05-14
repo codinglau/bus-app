@@ -7,11 +7,10 @@ const routes = [
         path: '',
         name: 'home',
         redirect: {
-          name: 'bus.routeList',
-          params: { 
+          name: 'bus.index',
+          params: {
             lang: 'tc',   // default language is Traditional Chinese
-            companyId: 'kmb', // default bus company is KMB 
-          }, 
+          },
         },
       },
       {
@@ -19,31 +18,42 @@ const routes = [
         children: [
           {
             path: '',
+            name: 'bus.home',
+            component: () => import('pages/IndexPage.vue'),
+          },
+          {
+            path: ':method',
             redirect: (to) => ({
               name: 'bus.routeList',
               params: {
                 lang: to.params.lang,
-                companyId: 'kmb', // default bus company is KMB
+                method: to.params.method,
+                companyId: 'nwfb',
               },
             }),
-          },
-          {
-            path: ':companyId',
             children: [
               {
-                path: '',
-                name: 'bus.routeList',
-                component: () => import('pages/bus/RouteListPage.vue'),
+                path: ':companyId',
+                children: [
+                  {
+                    path: '',
+                    name: 'bus.routeList',
+                    component: () => import('pages/bus/RouteListPage.vue'),
+                    props: (route) => ({
+                      ...route.params,
+                    }),
+                  },
+                  {
+                    path: ':routeId/:direction',
+                    name: 'bus.routeStopList',
+                    component: () => import('pages/bus/RouteStopListPage.vue'),
+                    props: (route) => ({
+                      ...route.params,
+                      ...route.query,
+                    }),
+                  }
+                ],
               },
-              {
-                path: ':routeId/:direction',
-                name: 'bus.routeStopList',
-                component: () => import('pages/bus/RouteStopListPage.vue'),
-                props: (route) => ({
-                  ...route.params,
-                  ...route.query,
-                }),
-              }
             ],
           },
         ],

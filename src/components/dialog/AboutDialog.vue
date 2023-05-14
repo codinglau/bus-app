@@ -2,14 +2,16 @@
   <q-dialog persistent
       :model-value="modelValue"
       @update:model-value="(value) => $emit('update:modelValue', value)">
-    <q-card class="dialog relative-position">
-      <q-toolbar class="toolbar bg-primary text-white justify-between">
-        <q-toolbar-title>{{ t(dialogTitle) }}</q-toolbar-title>
+    <q-card class="dialog column no-wrap no-scroll">
+      <q-toolbar class="bg-primary text-white justify-between">
+        <q-toolbar-title>{{ t('dialog.about.title') }}</q-toolbar-title>
         <q-btn flat round dense v-close-popup
             icon="close"
             aria-label="Close" />
       </q-toolbar>
-      <q-card flat bordered>
+
+      <q-card flat bordered class="col scroll">
+        <!-- setting language -->
         <q-item>
           <q-item-section avatar>
             <q-avatar :icon="data.language.icon" text-color="primary" />
@@ -29,10 +31,10 @@
             </q-item-label>
           </q-item-section>
         </q-item>
-      </q-card>
 
-      <!-- project descriptions -->
-      <q-card flat bordered>
+        <q-separator />
+        
+        <!-- about this app -->
         <q-list separator>
           <q-item 
               v-for="item in projectDescriptions"
@@ -80,10 +82,7 @@ const { t, locale } = useI18n({ useScope: 'global' });
 
 // define props
 defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false
-  },
+  modelValue: { type: Boolean, default: false },
 });
 
 // define emits
@@ -110,9 +109,6 @@ const data = reactive({
     ]
   },
 });
-
-// dialog title
-const dialogTitle = 'dialog.about.title';
 
 // project descriptions
 const projectDescriptions = [
@@ -155,7 +151,7 @@ const projectDescriptions = [
   },
 ];
 
-// set language to cookie
+// update website display language 
 function setLanguage(value) {
   // update locale
   locale.value = value;
@@ -167,9 +163,7 @@ function setLanguage(value) {
       ...route.params,
       lang: (value === 'zh-TW') ? 'tc' : 'en', 
     },
-    query: {
-      ...route.query,
-    },
+    query: { ...route.query },
   });
 }
 </script>
@@ -177,12 +171,8 @@ function setLanguage(value) {
 <style scoped lang="scss">
 .dialog {
   width: 600px;
+  min-height: 500px;
   max-width: 90vw;
-}
-
-.toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  max-height: 90vh;
 }
 </style>

@@ -20,8 +20,7 @@
     <!-- company tabs -->
     <Bus.CompanyTabs outside-arrows 
         class="bg-grey-2"
-        :options="companyList"
-        @tab-click="(val) => $emit('tab-click', val)" />
+        :options="companyList" />
 
     <!-- left drawer -->
     <Bus.RouteList class="drawer__content" />
@@ -45,7 +44,7 @@ defineProps({
 });
 
 // define emits
-defineEmits(['update:modelValue', 'btn-click', 'tab-click']);
+defineEmits(['update:modelValue', 'btn-click']);
 </script>
 
 <style lang="scss">

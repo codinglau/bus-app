@@ -1,6 +1,6 @@
 export default {
   header: {
-    title: '巴士 APP',
+    title: '香港巴士 APP',
   },
   drawer: {
     title: '巴士路線',

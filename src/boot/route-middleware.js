@@ -1,10 +1,10 @@
 import { boot } from 'quasar/wrappers';
 import { Notify } from 'quasar';
 import { i18n } from './i18n.js';
-import { useOption } from 'src/constants';
+import { useGlobalOption } from 'src/constants';
 
-const { companies } = useOption();
-const companyIds = companies.map((company) => company.value);
+const globalOption = useGlobalOption();
+const companyIds = globalOption.getCompanyIds();
 
 // "async" is optional;
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
@@ -20,9 +20,6 @@ export default boot(({ router }) => {
         // for invalid company id, redirect to home page
         return { name: 'home' };
       }
-    } else {
-      // for invalid company id, redirect to home page
-      
     }
   });
 });

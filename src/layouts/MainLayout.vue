@@ -1,50 +1,34 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- header -->
-    <q-header reveal>
-      <Bus.RouteListPageMobileHeader v-if="showRouteListPageMobileHeader" />
-      <q-toolbar v-else>
-        <q-btn flat dense round
-            icon="menu"
-            aria-label="Menu"
-            @click="toggleLeftDrawer" />
-        <q-toolbar-title>{{ $t('layout.header.title') }}</q-toolbar-title>
+    <q-header reveal elevated>
+      <!-- <Bus.RouteListPageMobileHeader v-if="showRouteListPageMobileHeader" /> -->
+      <q-toolbar>
+        <q-avatar icon="fa-solid fa-bus-simple" />
+        <q-toolbar-title 
+            class="cursor-pointer"
+            @click="onToolbarTitleClick">
+          {{ $t('layout.header.title') }}
+        </q-toolbar-title>
+        <q-btn unelevated stretch
+              icon="fa-solid fa-gear" 
+              :aria-label="$t('layout.tooltip.about')"
+              @click="isDialogOpen = true" />
       </q-toolbar>
     </q-header>
 
     <!-- footer -->
-    <q-footer bordered class="lt-md bg-transparent text-dark">
+    <q-footer elevated class="bg-transparent text-dark">
       <!-- company tabs -->
       <Bus.CompanyTabs outside-arrows switch-indicator
-          class="bg-primary text-white lt-md"
+          class="bg-primary text-white"
           active-bg-color="primary"
           indicator-color="white"
-          :options="companyList">
-        <template #prepend>
-          <q-btn unelevated stretch
-              icon="fa-solid fa-gear" 
-              :aria-label="$t('layout.tooltip.about')"
-              @click="isDialogOpen = true" />
-        </template>
-        <template #append>
-          <q-btn unelevated stretch
-              v-if="returnBtn.show"
-              icon="reply" 
-              :to="returnBtn.to" />
-        </template>
-      </Bus.CompanyTabs>
+          :options="companyList" />
     </q-footer>
 
-    <!-- desktop drawer -->
-    <Layout.DesktopDrawer 
-        v-if="$q.screen.gt.sm"
-        v-model="leftDrawerOpen"
-        :company-list="companyList"
-        @btn-click="isDialogOpen = true"
-        @tab-click="onTabClick" />
-
     <!-- main panel -->
-    <q-page-container>
+    <q-page-container class="bg-grey-2">
       <router-view />
     </q-page-container>
 
@@ -56,61 +40,35 @@
 <script setup>
 import { useMeta, useQuasar } from 'quasar';
 import { ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { Bus, Dialog, Layout } from 'src/components';
-import { useOption } from 'src/constants';
+import { Bus, Dialog } from 'src/components';
+import { useGlobalOption } from 'src/constants';
 
-// #region Setup
+// #region Setup ===============================================================
 const $q = useQuasar();
 const route = useRoute();
+const router = useRouter();
 const { t } = useI18n();
-const option = useOption();
+const globalOption = useGlobalOption();
 // #endregion
 
-// #region Drawer
-const leftDrawerOpen = ref(false);  // left drawer open state
-function toggleLeftDrawer() { 
-  // toggle left drawer open state
-  leftDrawerOpen.value = !leftDrawerOpen.value 
+// #region toolbar =============================================================
+// redirect home on toolbar title click
+function onToolbarTitleClick() {
+  router.push({
+    name: 'bus.home',
+    params: { lang: route.params.lang },
+  });
 }
+// about dialog open state
+const isDialogOpen = ref(false);
 // #endregion
 
 // #region Company List
 const companyId = ref('');
-const companyList = option.getCompanyList(true);
-const returnBtn = computed(() => {
-  // return button target
-  let to = null;
-  if (route.name === 'bus.routeStopList') {
-    to = {
-      name: 'bus.routeList',
-      params: {
-        lang: route.params.lang,
-        companyId: route.params.companyId,
-      },
-    }
-  }
-
-  return {
-    show: route.name === 'bus.routeStopList',
-    to,
-  };
-});
+const companyList = globalOption.getCompanyList(true);
 // #endregion
-
-// #region Dialog
-// dialog open state
-const isDialogOpen = ref(false);
-// #endregion
-
-function onTabClick(val) {
-  // hangle tab click
-  companyId.value = val;
-  if (val !== route.params.companyId) {
-    // setTimeout(fetchRouteList, 300);
-  }
-}
 
 // render route list page mobile header 
 // when route name is 'bus.routeList' and screen width is less than md
@@ -118,7 +76,7 @@ const showRouteListPageMobileHeader = computed(() => (
   route.name === 'bus.routeList' && $q.screen.lt.md
 ));
 
-// #region Meta ----------------------------------------------------------------
+// #region Meta ================================================================
 useMeta(() => ({
   title: t('layout.header.title'),
 }));

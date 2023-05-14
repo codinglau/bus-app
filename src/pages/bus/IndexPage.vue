@@ -37,7 +37,7 @@
 <script setup>
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { useOption } from 'src/constants';
+import { useGlobalOption } from 'src/constants';
 
 // define props
 const props = defineProps({
@@ -51,7 +51,7 @@ const props = defineProps({
 const router = useRouter();
 
 // get global option
-// const { regions } = useOption();
+// const { regions } = useGlobalOption();
 
 // // page data
 // const data = reactive({

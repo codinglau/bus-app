@@ -1,5 +1,5 @@
-import useOption from "./option.js";
+import useGlobalOption from "./global-option.js";
 
 export {
-  useOption,
+  useGlobalOption,
 }
