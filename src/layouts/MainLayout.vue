@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- header -->
-    <q-header reveal elevated>
+    <q-header reveal bordered>
       <!-- <Bus.RouteListPageMobileHeader v-if="showRouteListPageMobileHeader" /> -->
       <q-toolbar>
         <q-avatar icon="fa-solid fa-bus-simple" />
@@ -18,12 +18,13 @@
     </q-header>
 
     <!-- footer -->
-    <q-footer elevated v-if="showFooter" class="bg-transparent text-dark">
+    <q-footer bordered v-if="showFooter" class="bg-transparent text-dark">
       <!-- company tabs -->
       <Bus.CompanyTabs outside-arrows switch-indicator
-          class="bg-primary text-white"
+          class="bg-white text-primary"
           active-bg-color="primary"
-          indicator-color="white"
+          active-color="white"
+          indicator-color="primary"
           :options="companyList" />
     </q-footer>
 

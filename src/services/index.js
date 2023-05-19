@@ -3,6 +3,7 @@ import { useGlobalOption } from 'src/constants';
 import useCtbNwfbService from './ctb-nwfb-service.js';
 import useKmbLwbService from './kmb-lwb-service.js';
 import useNlbService from './nlb-service.js';
+import { route } from 'quasar/wrappers';
 
 export function useBusService() {
   const option = useGlobalOption();
@@ -40,14 +41,6 @@ export function useBusService() {
       } else if (companyId === 'nlb') {
         routeList = await nlbService.getRouteList();
       }
-
-      // add company label to each route
-      routeList = routeList.map((
-        /** @type {{ [x:string]: string }} */ rl
-      ) => ({
-        ...rl,
-        company: option.companies.find((c) => c.value === companyId).label,
-      }));
 
       return Promise.resolve(routeList);
     } catch (error) {

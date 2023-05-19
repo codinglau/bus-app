@@ -34,25 +34,21 @@
                   <q-item-section avatar>
                     <q-card-section 
                         class="column items-center overflow-hidden q-pa-xs">
-                      <q-chip square
-                          :label="t(row.company)" 
-                          class="q-mt-none"
-                          size="sm" />
                       <q-btn unelevated round
                           color="primary"
                           text-color="white"
-                          size="md"
+                          size="lg"
                           :label="row.id" />
                     </q-card-section>
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label>
+                    <q-item-label class="text-h6">
                       {{ row.origin[$route.params.lang] }}
                     </q-item-label>
                     <q-item-label class="text-center">
-                      <q-icon name="swap_horiz" color="primary" size="sm" />
+                      <q-icon name="swap_horiz" color="primary" size="md" />
                     </q-item-label>
-                    <q-item-label class="text-right">
+                    <q-item-label class="text-h6 text-right">
                       {{ row.destination[$route.params.lang] }}
                     </q-item-label>
                   </q-item-section>
@@ -67,7 +63,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onBeforeMount, watchEffect } from 'vue';
+import { computed, ref, onBeforeMount, onUpdated } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useFetch } from 'src/composables';
@@ -91,7 +87,7 @@ const filteredRouteList = computed(() => {
   let resultList = [];
 
   if (searchField.value) {
-    // if search field is not empty
+    // non-empty search field
     resultList = routeList.value.filter((r) => {
       // combine route id, origin and destination as search target
       const origins = Object.keys(r.origin).map((k) => r.origin[k]);
@@ -101,7 +97,7 @@ const filteredRouteList = computed(() => {
       return target.includes(searchField.value.toUpperCase());
     });
   } else {
-    // if search field is empty
+    // empty search field
     resultList = routeList.value.slice();
   }
 
@@ -147,16 +143,17 @@ function toRouteStopList(routeId) {
 };
 
 // #region Lifecycle
-// onBeforeMount(() => {
-//   fetchRouteList();
-// });
-// #endregion
+onBeforeMount(() => {
+  fetchRouteList();
+});
 
-watchEffect(() => {
+onUpdated(() => {
   // watch route changes and fetch bus route list
   // for the new company id
   if (route.name === 'bus.routeList') {
     setTimeout(fetchRouteList, 300);
   }
 });
+// #endregion
+
 </script>
